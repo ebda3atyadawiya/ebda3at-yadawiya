@@ -4,24 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة التحكم - إبداعات يدوية</title>
-  <!-- Correction ici : ajout du lien vers le widget d'identité -->
-  </script>
 </head>
 <body>
-  <!-- Chargement du CMS -->
-  <script src="https://unpkg.com@^3.0.0/dist/decap-cms.js"></script>
+  <!-- تحميل Decap CMS من مصدر موثوق -->
+  <script src="https://cdn.jsdelivr.net/npm/decap-cms@3.0.0/dist/decap-cms.js"></script>
 
-  <!-- Script pour gérer la redirection après connexion -->
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
-        }
-      });
-    }
-  </script>
+  <!-- دعم Netlify Identity (اختياري لكن موصى به) -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </body>
 </html>
