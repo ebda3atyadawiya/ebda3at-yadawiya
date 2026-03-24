@@ -4,7 +4,15 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/index.html"
+  status = 200
+  force = true
+
 [[headers]]
   for = "/admin/*"
   [headers.values]
     "Content-Type" = "text/html; charset=utf-8"
+    "X-Frame-Options" = "DENY"
+    "Access-Control-Allow-Origin" = "*"
