@@ -284,38 +284,17 @@
         </div>
     </section>
 
-    <!-- Creations -->
+    <!-- Creations (Dynamique) -->
     <section class="py-5" id="creations">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 data-ar="أحدث الإصدارات" data-fr="Nouvelles créations"></h2>
             </div>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="work-item">
-                        <img src="images/diy-111801.jpg" alt="مزهرية خزفية" class="w-100">
-                        <div class="p-3">
-                            <h5 data-ar="مزهرية خزفية" data-fr="Vase en céramique"></h5>
-                            <small class="text-muted" data-ar="مصنوعة يدويًا من طين محلي" data-fr="Fabriqué à la main avec de l’argile locale"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="work-item">
-                        <img src="images/diy-825x510.jpg" alt="نسيج جداري" class="w-100">
-                        <div class="p-3">
-                            <h5 data-ar="نسيج جداري" data-fr="Tissage mural"></h5>
-                            <small class="text-muted" data-ar="خيوط ملونة تُنسج بحبّ" data-fr="Des fils colorés tissés avec amour"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="work-item">
-                        <img src="images/DIY1.jpg" alt="علبة خشبية" class="w-100">
-                        <div class="p-3">
-                            <h5 data-ar="علبة خشبية" data-fr="Boîte en bois"></h5>
-                            <small class="text-muted" data-ar="منحوتة من خشب الزيتون" data-fr="Sculptée dans du bois d’olivier"></small>
-                        </div>
+            <div class="row g-4" id="creations-container">
+                <!-- سيتم تحميل الإبداعات هنا تلقائيًا -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">جارٍ التحميل...</span>
                     </div>
                 </div>
             </div>
@@ -446,6 +425,82 @@
 
         // تهيئة اللغة الافتراضية
         updateLanguage('ar');
+
+        // === جلب الإبداعات من _posts/ ===
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('creations-container');
+            
+            fetch('https://api.github.com/repos/ebda3atyadawiya/ebda3at-yadawiya/contents/_posts')
+                .then(res => res.json())
+                .then(files => {
+                    container.innerHTML = ''; // إزالة-spinner
+                    
+                    if (!Array.isArray(files) || files.length === 0) {
+                        container.innerHTML = `<div class="col-12 text-center text-muted">${document.documentElement.lang === 'ar' ? 'لا توجد إبداعات بعد.' : 'Aucune création pour le moment.'}</div>`;
+                        return;
+                    }
+
+                    files
+                        .filter(file => file.name.endsWith('.md'))
+                        .sort((a, b) => b.name.localeCompare(a.name)) // الأحدث أولًا
+                        .forEach(file => {
+                            fetch(`https://raw.githubusercontent.com/ebda3atyadawiya/ebda3at-yadawiya/main/_posts/${file.name}`)
+                                .then(res => res.text())
+                                .then(content => {
+                                    const lines = content.split('\n');
+                                    let inFrontmatter = false;
+                                    let title = { ar: 'عنوان', fr: 'Titre' };
+                                    let desc = { ar: 'وصف', fr: 'Description' };
+                                    let image = 'images/DIY1.jpg';
+
+                                    for (const line of lines) {
+                                        if (line.trim() === '---') {
+                                            inFrontmatter = !inFrontmatter;
+                                            continue;
+                                        }
+                                        if (inFrontmatter) {
+                                            if (line.startsWith('title:')) {
+                                                const val = line.replace('title:', '').trim().replace(/["']/g, '');
+                                                title = { ar: val, fr: val };
+                                            }
+                                            if (line.startsWith('description:')) {
+                                                const val = line.replace('description:', '').trim().replace(/["']/g, '');
+                                                desc = { ar: val, fr: val };
+                                            }
+                                            if (line.startsWith('image:')) {
+                                                image = line.replace('image:', '').trim().replace(/["']/g, '');
+                                            }
+                                        }
+                                    }
+
+                                    const col = document.createElement('div');
+                                    col.className = 'col-lg-4 col-md-6';
+                                    col.innerHTML = `
+                                        <div class="work-item">
+                                            <img src="${image}" alt="${title.ar}" onerror="this.src='images/DIY1.jpg'" class="w-100">
+                                            <div class="p-3">
+                                                <h5 data-ar="${title.ar}" data-fr="${title.fr}">${title.ar}</h5>
+                                                <small class="text-muted" data-ar="${desc.ar}" data-fr="${desc.fr}">${desc.ar}</small>
+                                            </div>
+                                        </div>
+                                    `;
+                                    container.appendChild(col);
+                                });
+                        });
+
+                    // بعد التحميل، نُفعّل دعم تبديل اللغة على العناصر الجديدة
+                    setTimeout(() => {
+                        const currentLang = document.documentElement.lang;
+                        document.querySelectorAll('#creations-container [data-ar]').forEach(el => {
+                            el.textContent = currentLang === 'ar' ? el.dataset.ar : el.dataset.fr;
+                        });
+                    }, 100);
+                })
+                .catch(err => {
+                    console.error('خطأ في تحميل الإبداعات:', err);
+                    container.innerHTML = `<div class="col-12 text-center text-danger">${document.documentElement.lang === 'ar' ? 'تعذر تحميل الإبداعات.' : 'Impossible de charger les créations.'}</div>`;
+                });
+        });
     </script>
 </body>
 </html>
