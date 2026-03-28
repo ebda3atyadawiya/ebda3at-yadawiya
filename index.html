@@ -43,10 +43,38 @@
             background: #eef5ff;
             color: #1d4ed8;
             font-weight: 600;
-            padding: 8px 0;
+            padding: 12px 0;
             text-align: center;
             font-size: 1.05rem;
-            display: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        #weather-banner select,
+        #weather-banner button {
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-size: 0.95rem;
+        }
+
+        #weather-display {
+            min-width: 200px;
+        }
+
+        .hijri-date {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 8px;
+            font-size: 0.95rem;
         }
 
         /* Hero Slideshow with Cross-Fade */
@@ -245,8 +273,20 @@
         </div>
     </nav>
 
-    <!-- Weather Banner -->
-    <div id="weather-banner">⏳ جارٍ تحميل الطقس...</div>
+    <!-- Weather + Hijri Date Banner -->
+    <div id="weather-banner">
+        <select id="city-select">
+            <option value="Tunis">تونس</option>
+            <option value="Sfax">صفاقس</option>
+            <option value="Sousse">سوسة</option>
+            <option value="Kairouan">القيروان</option>
+            <option value="Bizerte">بنزرت</option>
+            <option value="Gabes">قابس</option>
+        </select>
+        <button id="weather-update-btn">🔄 تحديث</button>
+        <div id="weather-display">⏳ جارٍ التحميل...</div>
+    </div>
+    <div class="text-center hijri-date" id="hijri-date">جارٍ تحميل التاريخ الهجري...</div>
 
     <!-- Hero Slideshow (Cross-Fade) -->
     <section class="hero-section" id="home">
@@ -561,43 +601,66 @@
                     container.innerHTML = `<div class="col-12 text-center text-danger">${document.documentElement.lang === 'ar' ? 'تعذر تحميل الإبداعات.' : 'Impossible de charger les créations.'}</div>`;
                 });
 
-            // === عرض الطقس في الصفحة الرئيسية ===
-            const weatherBanner = document.getElementById('weather-banner');
-            const API_KEY = '8ee09361ef96b310c74108b1e8c8cb48'; // ← مفتاحك
+            // === الطقس والتاريخ الهجري ===
+            const API_KEY = '8ee09361ef96b310c74108b1e8c8cb48';
+            const citySelect = document.getElementById('city-select');
+            const weatherDisplay = document.getElementById('weather-display');
+            const updateBtn = document.getElementById('weather-update-btn');
+            const hijriDateEl = document.getElementById('hijri-date');
 
-            let city = 'Tunis';
-            fetch('https://ipapi.co/json/')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.city) city = data.city;
-                })
-                .catch(() => {})
-                .finally(() => {
-                    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=ar&appid=${API_KEY}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.cod === 200) {
-                                const temp = Math.round(data.main.temp);
-                                const desc = data.weather[0].description;
-                                const cityName = data.name;
-                                weatherBanner.innerHTML = `${cityName} — ${temp}°م، ${desc}`;
-                                weatherBanner.style.display = 'block';
-                            }
-                        })
-                        .catch(() => {
-                            // احتياطي: طقس تونس
-                            fetch(`https://api.openweathermap.org/data/2.5/weather?q=Tunis&units=metric&lang=ar&appid=${API_KEY}`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.cod === 200) {
-                                        const temp = Math.round(data.main.temp);
-                                        const desc = data.weather[0].description;
-                                        weatherBanner.innerHTML = `تونس — ${temp}°م، ${desc}`;
-                                        weatherBanner.style.display = 'block';
-                                    }
-                                });
-                        });
-                });
+            // تحويل التاريخ الميلادي إلى هجري (تقريبي)
+            function gregorianToHijri(gDate) {
+                const gYear = gDate.getFullYear();
+                const gMonth = gDate.getMonth();
+                const gDay = gDate.getDate();
+                const days = Math.floor((gYear - 621) * 365.25) + Math.floor((gMonth + 1) * 30.6) + gDay - 30;
+                const hYear = Math.floor((days + 30) / 354.367);
+                const hMonth = Math.floor((days - hYear * 354.367) / 29.53);
+                const hDay = Math.round(days - hYear * 354.367 - hMonth * 29.53);
+                const months = ["محرم", "صفر", "ربيع أول", "ربيع ثاني", "جمادى أول", "جمادى آخر", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
+                return `${hDay} ${months[hMonth]} ${1447 + hYear}هـ`;
+            }
+
+            // عرض التاريخ الهجري
+            const now = new Date();
+            const hijriDate = gregorianToHijri(now);
+            const gregorianDate = now.toLocaleDateString('ar-SA', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            hijriDateEl.textContent = `${gregorianDate} | ${hijriDate}`;
+
+            // دالة جلب الطقس
+            function fetchWeather(city) {
+                weatherDisplay.textContent = '⏳ جارٍ التحديث...';
+                fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=ar&appid=${API_KEY}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.cod === 200) {
+                            const temp = Math.round(data.main.temp);
+                            const desc = data.weather[0].description;
+                            weatherDisplay.textContent = `${data.name} — ${temp}°م، ${desc}`;
+                        } else {
+                            weatherDisplay.textContent = '❌ مدينة غير موجودة';
+                        }
+                    })
+                    .catch(() => {
+                        weatherDisplay.textContent = '⚠️ خطأ في الاتصال';
+                    });
+            }
+
+            // التحديث عند التغيير أو النقر
+            citySelect.addEventListener('change', () => {
+                fetchWeather(citySelect.value);
+            });
+            updateBtn.addEventListener('click', () => {
+                fetchWeather(citySelect.value);
+            });
+
+            // تحميل الطقس الأولي
+            fetchWeather('Tunis');
         });
     </script>
 </body>
