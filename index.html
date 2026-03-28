@@ -38,6 +38,17 @@
             direction: ltr;
         }
 
+        /* Weather Banner */
+        #weather-banner {
+            background: #eef5ff;
+            color: #1d4ed8;
+            font-weight: 600;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 1.05rem;
+            display: none;
+        }
+
         /* Hero Slideshow with Cross-Fade */
         .hero-section {
             height: 100vh;
@@ -234,6 +245,9 @@
         </div>
     </nav>
 
+    <!-- Weather Banner -->
+    <div id="weather-banner">⏳ جارٍ تحميل الطقس...</div>
+
     <!-- Hero Slideshow (Cross-Fade) -->
     <section class="hero-section" id="home">
         <div class="hero-slides">
@@ -345,7 +359,6 @@
                 <h2 data-ar="أحدث الإصدارات" data-fr="Nouvelles créations"></h2>
             </div>
             <div class="row g-4" id="creations-container">
-                <!-- سيتم تحميل الإبداعات هنا تلقائيًا -->
                 <div class="col-12 text-center">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">جارٍ التحميل...</span>
@@ -436,7 +449,6 @@
             const isArabic = lang === 'ar';
             document.getElementById('langToggle').textContent = isArabic ? 'Français' : 'العربية';
 
-            // تحديث الأرقام
             if (!isArabic) {
                 ['creations-count', 'visitors-count', 'comments-count'].forEach(id => {
                     const el = document.getElementById(id);
@@ -444,16 +456,14 @@
                 });
             }
 
-            // تحديث النصوص
             document.querySelectorAll('[data-ar]').forEach(el => {
                 el.textContent = isArabic ? el.dataset.ar : el.dataset.fr;
             });
         }
 
-        // Slideshow with Cross-Fade
+        // Slideshow
         const slides = document.querySelectorAll('.hero-slide');
         let currentIndex = 0;
-
         function fadeOutThenIn(nextIndex) {
             slides[currentIndex].classList.remove('active');
             setTimeout(() => {
@@ -461,13 +471,10 @@
                 currentIndex = nextIndex;
             }, 1200);
         }
-
         function nextSlide() {
             const nextIndex = (currentIndex + 1) % slides.length;
             fadeOutThenIn(nextIndex);
         }
-
-        // بدء العرض التلقائي كل 5 ثوانٍ
         setInterval(nextSlide, 5000);
         slides[0].classList.add('active');
 
@@ -476,19 +483,15 @@
             const current = document.documentElement.lang;
             updateLanguage(current === 'ar' ? 'fr' : 'ar');
         });
-
-        // تهيئة اللغة الافتراضية
         updateLanguage('ar');
 
         // === جلب الإبداعات من _posts/ ===
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('creations-container');
-            
             fetch('https://api.github.com/repos/ebda3atyadawiya/ebda3at-yadawiya/contents/_posts')
                 .then(res => res.json())
                 .then(files => {
-                    container.innerHTML = ''; // إزالة-spinner
-                    
+                    container.innerHTML = '';
                     if (!Array.isArray(files) || files.length === 0) {
                         container.innerHTML = `<div class="col-12 text-center text-muted">${document.documentElement.lang === 'ar' ? 'لا توجد إبداعات بعد.' : 'Aucune création pour le moment.'}</div>`;
                         return;
@@ -496,7 +499,7 @@
 
                     files
                         .filter(file => file.name.endsWith('.md'))
-                        .sort((a, b) => b.name.localeCompare(a.name)) // الأحدث أولًا
+                        .sort((a, b) => b.name.localeCompare(a.name))
                         .forEach(file => {
                             fetch(`https://raw.githubusercontent.com/ebda3atyadawiya/ebda3at-yadawiya/main/_posts/${file.name}`)
                                 .then(res => res.text())
@@ -529,7 +532,6 @@
                                     }
 
                                     const postUrl = `posts/${slug}.html`;
-
                                     const col = document.createElement('div');
                                     col.className = 'col-lg-4 col-md-6';
                                     col.innerHTML = `
@@ -547,7 +549,6 @@
                                 });
                         });
 
-                    // بعد التحميل، نُفعّل دعم تبديل اللغة على العناصر الجديدة
                     setTimeout(() => {
                         const currentLang = document.documentElement.lang;
                         document.querySelectorAll('#creations-container [data-ar]').forEach(el => {
@@ -558,6 +559,44 @@
                 .catch(err => {
                     console.error('خطأ في تحميل الإبداعات:', err);
                     container.innerHTML = `<div class="col-12 text-center text-danger">${document.documentElement.lang === 'ar' ? 'تعذر تحميل الإبداعات.' : 'Impossible de charger les créations.'}</div>`;
+                });
+
+            // === عرض الطقس في الصفحة الرئيسية ===
+            const weatherBanner = document.getElementById('weather-banner');
+            const API_KEY = '8ee09361ef96b310c74108b1e8c8cb48'; // ← مفتاحك
+
+            let city = 'Tunis';
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.city) city = data.city;
+                })
+                .catch(() => {})
+                .finally(() => {
+                    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=ar&appid=${API_KEY}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.cod === 200) {
+                                const temp = Math.round(data.main.temp);
+                                const desc = data.weather[0].description;
+                                const cityName = data.name;
+                                weatherBanner.innerHTML = `${cityName} — ${temp}°م، ${desc}`;
+                                weatherBanner.style.display = 'block';
+                            }
+                        })
+                        .catch(() => {
+                            // احتياطي: طقس تونس
+                            fetch(`https://api.openweathermap.org/data/2.5/weather?q=Tunis&units=metric&lang=ar&appid=${API_KEY}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.cod === 200) {
+                                        const temp = Math.round(data.main.temp);
+                                        const desc = data.weather[0].description;
+                                        weatherBanner.innerHTML = `تونس — ${temp}°م، ${desc}`;
+                                        weatherBanner.style.display = 'block';
+                                    }
+                                });
+                        });
                 });
         });
     </script>
