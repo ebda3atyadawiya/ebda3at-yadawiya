@@ -674,27 +674,47 @@
       emailjs.init("vmakFeib8IGyypYb1");
 
       // دالة الإرسال
-      function sendEmail(e) {
-        e.preventDefault();
+     <!-- ✅ EmailJS - التحميل الآمن -->
+<script>
+  // دالة الإرسال المؤجلة
+  function sendEmail(e) {
+    e.preventDefault();
 
-        const params = {
-          user_name: document.getElementById("user_name").value,
-          user_email: document.getElementById("user_email").value,
-          message: document.getElementById("message").value
-        };
+    // محاولة تحميل EmailJS ديناميكيًا إذا لم يكن محملًا
+    if (typeof emailjs === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.emailjs.com/sdk/2.6.4/email.min.js';
+      script.onload = () => {
+        initAndSend(e);
+      };
+      script.onerror = () => {
+        alert("❌ فشل تحميل خدمة الإرسال. تحقق من اتصال الإنترنت.");
+      };
+      document.head.appendChild(script);
+    } else {
+      initAndSend(e);
+    }
+  }
 
-        emailjs.send("service_bvhucsk", "template_7tgz7nd", params)
-          .then(
-            () => {
-              alert("✅ تم إرسال رسالتك بنجاح!");
-              document.querySelector("form").reset();
-            },
-            (error) => {
-              alert("❌ فشل الإرسال. تحقق من اتصال الإنترنت.");
-              console.error("EmailJS Error:", error);
-            }
-          );
-      }
-    </script>
+  function initAndSend(e) {
+    emailjs.init("vmakFeib8IGyypYb1");
+
+    const params = {
+      user_name: document.getElementById("user_name").value,
+      user_email: document.getElementById("user_email").value,
+      message: document.getElementById("message").value
+    };
+
+    emailjs.send("service_bvhucsk", "template_7tgz7nd", params)
+      .then(() => {
+        alert("✅ تم إرسال رسالتك بنجاح!");
+        document.querySelector("form").reset();
+      })
+      .catch((error) => {
+        alert("❌ حدث خطأ أثناء الإرسال.");
+        console.error("EmailJS Error:", error);
+      });
+  }
+</script>
 </body>
 </html>
