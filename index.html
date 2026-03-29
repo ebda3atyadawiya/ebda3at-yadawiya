@@ -419,11 +419,14 @@
             <div class="row g-0">
                 <div class="col-lg-6 p-3">
                     <div class="contact-card">
-                        <!-- نموذج التواصل الجديد مع EmailJS -->
                         <form onsubmit="sendEmail(event)">
                           <div class="mb-3">
                             <label class="form-label text-dark" data-ar="اسمك" data-fr="Votre nom"></label>
                             <input type="text" id="name" class="form-control" required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label text-dark" data-ar="اللقب" data-fr="Prénom"></label>
+                            <input type="text" id="lastname" class="form-control" required>
                           </div>
                           <div class="mb-3">
                             <label class="form-label text-dark" data-ar="بريدك الإلكتروني" data-fr="Votre email"></label>
@@ -480,7 +483,6 @@
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.6.4/email.min.js"></script>
     <script>
-      // تهيئة EmailJS
       (function() {
         emailjs.init("6WKJimf52Wbnd0rCl");
       })();
@@ -552,6 +554,10 @@
                         .filter(file => file.name.endsWith('.md'))
                         .sort((a, b) => b.name.localeCompare(a.name))
                         .forEach(file => {
+                            // ✅ استخراج اسم بدون التاريخ
+                            const baseName = file.name.replace('.md', '');
+                            const slug = baseName.replace(/^\d{4}-\d{2}-\d{2}-/, ''); // ← هذا هو المفتاح
+
                             fetch(`https://raw.githubusercontent.com/ebda3atyadawiya/ebda3at-yadawiya/main/_posts/${file.name}`)
                                 .then(res => res.text())
                                 .then(content => {
@@ -560,7 +566,6 @@
                                     let title = { ar: 'عنوان', fr: 'Titre' };
                                     let desc = { ar: 'وصف', fr: 'Description' };
                                     let image = 'images/DIY1.jpg';
-                                    let slug = file.name.replace('.md', '').replace(/^\d{4}-\d{2}-\d{2}-/, '');
 
                                     for (const line of lines) {
                                         if (line.trim() === '---') {
@@ -582,7 +587,7 @@
                                         }
                                     }
 
-                                    const postUrl = `posts/${slug}.html`;
+                                    const postUrl = `posts/${slug}.html`; // ← الآن يتطابق مع ملفاتك
                                     const col = document.createElement('div');
                                     col.className = 'col-lg-4 col-md-6';
                                     col.innerHTML = `
@@ -619,7 +624,6 @@
             const updateBtn = document.getElementById('weather-update-btn');
             const hijriDateEl = document.getElementById('hijri-date');
 
-            // دالة آمنة للتاريخ الهجري
             function gregorianToHijri(gDate) {
                 const gYear = gDate.getFullYear();
                 const gMonth = gDate.getMonth() + 1;
@@ -677,7 +681,7 @@
               e.preventDefault();
               
               const params = {
-                from_name: document.getElementById("name").value,
+                from_name: document.getElementById("name").value + " " + document.getElementById("lastname").value,
                 from_email: document.getElementById("email").value,
                 message: document.getElementById("message").value
               };
@@ -687,7 +691,7 @@
                   alert("✅ تم إرسال رسالتك بنجاح!");
                   document.querySelector("form").reset();
                 }, function(error) {
-                  alert("❌ حدث خطأ أثناء الإرسال. حاول مرة أخرى.");
+                  alert("❌ حدث خطأ أثناء الإرسال. تأكد من اتصال الإنترنت.");
                   console.error("Error:", error);
                 });
             };
