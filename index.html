@@ -424,16 +424,21 @@
                                 <label class="form-label text-dark" data-ar="اسمك" data-fr="Votre nom"></label>
                                 <input type="text" class="form-control" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label text-dark" data-ar="بريدك الإلكتروني" data-fr="Votre email"></label>
-                                <input type="email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-dark" data-ar="رسالتك" data-fr="Votre message"></label>
-                                <textarea class="form-control" rows="4" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-warning w-100 fw-bold" data-ar="إرسال" data-fr="Envoyer"></button>
-                        </form>
+                            <form action="https://formspree.io/f/mkopjroj" method="POST">
+  <div class="mb-3">
+    <label class="form-label text-dark" data-ar="اسمك" data-fr="Votre nom"></label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label text-dark" data-ar="بريدك الإلكتروني" data-fr="Votre email"></label>
+    <input type="email" name="email" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label text-dark" data-ar="رسالتك" data-fr="Votre message"></label>
+    <textarea name="message" class="form-control" rows="4" required></textarea>
+  </div>
+  <button type="submit" class="btn btn-warning w-100 fw-bold" data-ar="إرسال" data-fr="Envoyer">إرسال</button>
+</form>
                     </div>
                 </div>
                 <div class="col-lg-6 d-flex align-items-center justify-content-center p-3">
