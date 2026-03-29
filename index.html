@@ -419,46 +419,22 @@
             <div class="row g-0">
                 <div class="col-lg-6 p-3">
                     <div class="contact-card">
-                       <!-- نموذج التواصل -->
-<form onsubmit="sendEmail(event)">
-  <div class="mb-3">
-    <label class="form-label text-dark" data-ar="اسمك" data-fr="Votre nom"></label>
-    <input type="text" id="user_name" class="form-control" required>
-  </div>
-  <div class="mb-3">
-    <label class="form-label text-dark" data-ar="بريدك الإلكتروني" data-fr="Votre email"></label>
-    <input type="email" id="user_email" class="form-control" required>
-  </div>
-  <div class="mb-3">
-    <label class="form-label text-dark" data-ar="رسالتك" data-fr="Votre message"></label>
-    <textarea id="message" class="form-control" rows="4" required></textarea>
-  </div>
-  <button type="submit" class="btn btn-warning w-100 fw-bold" data-ar="إرسال" data-fr="Envoyer">إرسال</button>
-</form>
-
-<script>
-function sendEmail(e) {
-  e.preventDefault();
-
-  const params = {
-    user_name: document.getElementById("user_name").value,
-    user_email: document.getElementById("user_email").value,
-    message: document.getElementById("message").value
-  };
-
-  emailjs.send("service_bvhucsk", "template_7tgz7nd", params)
-    .then(
-      () => {
-        alert("✅ تم إرسال رسالتك بنجاح!");
-        document.querySelector("form").reset();
-      },
-      (error) => {
-        alert("❌ حدث خطأ. حاول مرة أخرى.");
-        console.error("EmailJS Error:", error);
-      }
-    );
-}
-</script>
+                        <!-- نموذج التواصل -->
+                        <form onsubmit="sendEmail(event)">
+                          <div class="mb-3">
+                            <label class="form-label text-dark" data-ar="اسمك" data-fr="Votre nom"></label>
+                            <input type="text" id="user_name" class="form-control" required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label text-dark" data-ar="بريدك الإلكتروني" data-fr="Votre email"></label>
+                            <input type="email" id="user_email" class="form-control" required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label text-dark" data-ar="رسالتك" data-fr="Votre message"></label>
+                            <textarea id="message" class="form-control" rows="4" required></textarea>
+                          </div>
+                          <button type="submit" class="btn btn-warning w-100 fw-bold" data-ar="إرسال" data-fr="Envoyer">إرسال</button>
+                        </form>
                     </div>
                 </div>
                 <div class="col-lg-6 d-flex align-items-center justify-content-center p-3">
@@ -500,15 +476,9 @@ function sendEmail(e) {
 
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.6.4/email.min.js"></script>
-<script>
-  // تهيئة EmailJS
-  (function() {
-    emailjs.init("vmakFeib8IGyypYb1"); // Public Key
-  })();
-</script>
+
+    <!-- تحويل الأرقام العربية إلى لاتينية -->
     <script>
-        // تحويل الأرقام العربية إلى لاتينية
         function convertArabicToLatin(text) {
             const map = {'٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9'};
             return text.replace(/[٠-٩]/g, d => map[d]);
@@ -695,6 +665,36 @@ function sendEmail(e) {
             });
             fetchWeather('Tunis');
         });
+    </script>
+
+    <!-- ✅ EmailJS - موضعه الصحيح في نهاية الصفحة -->
+    <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.6.4/email.min.js"></script>
+    <script>
+      // تهيئة EmailJS
+      emailjs.init("vmakFeib8IGyypYb1");
+
+      // دالة الإرسال
+      function sendEmail(e) {
+        e.preventDefault();
+
+        const params = {
+          user_name: document.getElementById("user_name").value,
+          user_email: document.getElementById("user_email").value,
+          message: document.getElementById("message").value
+        };
+
+        emailjs.send("service_bvhucsk", "template_7tgz7nd", params)
+          .then(
+            () => {
+              alert("✅ تم إرسال رسالتك بنجاح!");
+              document.querySelector("form").reset();
+            },
+            (error) => {
+              alert("❌ فشل الإرسال. تحقق من اتصال الإنترنت.");
+              console.error("EmailJS Error:", error);
+            }
+          );
+      }
     </script>
 </body>
 </html>
