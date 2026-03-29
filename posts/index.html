@@ -3,25 +3,61 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>صفحات الإبداعات — إبداعات يدوية</title>
+  <title>مزهرية خزفية - إبداعات يدوية</title>
   <style>
-    body { font-family: 'Tajawal', sans-serif; padding: 40px; background: #f9fafc; text-align: center; }
-    h1 { color: #1e40af; }
-    a { color: #2563eb; text-decoration: none; font-weight: 600; }
-    a:hover { text-decoration: underline; }
-    .list { max-width: 600px; margin: 0 auto; }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: #f9fafc;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    h1 {
+      color: #1e40af;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    p {
+      line-height: 1.7;
+      color: #333;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 20px;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .back:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-  <h1>صفحات الإبداعات</h1>
-  <div class="list">
-    <p>✅ هذه الصفحة تُظهر أن المجلد `posts/` يعمل.</p>
-    <p>الإبداعات المتاحة:</p>
-    <ul style="text-align: right; direction: rtl; padding-right: 20px;">
-      <li><a href="mizharia.html">مزهرية خزفية</a></li>
-      <!-- أضف المزيد لاحقًا -->
-    </ul>
-    <p><a href="../index.html">← العودة إلى الموقع الرئيسي</a></p>
+  <div class="container">
+    <h1>مزهرية خزفية</h1>
+    <img src="../images/DIY1.jpg" alt="مزهرية خزفية">
+    <p>
+      هذه المزهرية مصنوعة يدويًّا من طين محلي مستخرج من منطقة باجة في تونس. تم تشكيلها على عجلة الخزف التقليدية، ثم تجفيفها تحت أشعة الشمس لمدة 3 أيام، قبل أن تُخبز في فرن بدوي بدرجة حرارة تصل إلى 900°م.
+    </p>
+    <p>
+      الزخارف المستخدمة مستوحاة من الحرف الإسلامية القديمة، وتُرسم بيد الفنان دون استخدام قوالب. كل مزهرية هي قطعة فريدة لا تتكرر، تحمل بصمة صانعها وروح بيئته.
+    </p>
+    <a href="../index.html" class="back">← العودة إلى الإبداعات</a>
   </div>
 </body>
 </html>
