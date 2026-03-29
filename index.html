@@ -419,15 +419,15 @@
             <div class="row g-0">
                 <div class="col-lg-6 p-3">
                     <div class="contact-card">
-                        <!-- نموذج التواصل الجديد مع EmailJS -->
-                        <form onsubmit="sendEmail(event)">
+                       <!-- نموذج التواصل - معدّل ليتوافق مع EmailJS -->
+<form onsubmit="sendEmail(event)">
   <div class="mb-3">
     <label class="form-label text-dark" data-ar="اسمك" data-fr="Votre nom"></label>
-    <input type="text" id="name" class="form-control" required>
+    <input type="text" id="user_name" class="form-control" required>
   </div>
   <div class="mb-3">
     <label class="form-label text-dark" data-ar="بريدك الإلكتروني" data-fr="Votre email"></label>
-    <input type="email" id="email" class="form-control" required>
+    <input type="email" id="user_email" class="form-control" required>
   </div>
   <div class="mb-3">
     <label class="form-label text-dark" data-ar="رسالتك" data-fr="Votre message"></label>
@@ -435,22 +435,24 @@
   </div>
   <button type="submit" class="btn btn-warning w-100 fw-bold" data-ar="إرسال" data-fr="Envoyer">إرسال</button>
 </form>
-                        <script>
+
+<script>
 function sendEmail(e) {
   e.preventDefault();
   
+  // ⚠️ الأسماء يجب أن تتطابق مع ما في Template (user_name, user_email, message)
   const params = {
-    from_name: document.getElementById("name").value,
-    from_email: document.getElementById("email").value,
+    user_name: document.getElementById("user_name").value,
+    user_email: document.getElementById("user_email").value,
     message: document.getElementById("message").value
   };
 
   emailjs.send("service_bvhucsk", "template_7tgz7nd", params)
-    .then(function(response) {
+    .then(function() {
       alert("✅ تم إرسال رسالتك بنجاح!");
-      document.querySelector("form").reset(); // مسح الحقول
+      document.querySelector("form").reset();
     }, function(error) {
-      alert("❌ حدث خطأ أثناء الإرسال. حاول مرة أخرى.");
+      alert("❌ فشل الإرسال. تحقق من اتصال الإنترنت.");
       console.error("Error:", error);
     });
 }
@@ -496,14 +498,13 @@ function sendEmail(e) {
 
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.6.4/email.min.js"></script>
-    <script>
-      (function() {
-        emailjs.init("vmakFeib8IGyypYb1");
-      })();
-    </script>
+<script>
+  // تهيئة EmailJS
+  (function() {
+    emailjs.init("vmakFeib8IGyypYb1"); // Public Key
+  })();
+</script>
     <script>
         // تحويل الأرقام العربية إلى لاتينية
         function convertArabicToLatin(text) {
