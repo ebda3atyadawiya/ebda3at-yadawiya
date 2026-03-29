@@ -419,7 +419,7 @@
             <div class="row g-0">
                 <div class="col-lg-6 p-3">
                     <div class="contact-card">
-                       <!-- نموذج التواصل - معدّل ليتوافق مع EmailJS -->
+                       <!-- نموذج التواصل -->
 <form onsubmit="sendEmail(event)">
   <div class="mb-3">
     <label class="form-label text-dark" data-ar="اسمك" data-fr="Votre nom"></label>
@@ -439,8 +439,7 @@
 <script>
 function sendEmail(e) {
   e.preventDefault();
-  
-  // ⚠️ الأسماء يجب أن تتطابق مع ما في Template (user_name, user_email, message)
+
   const params = {
     user_name: document.getElementById("user_name").value,
     user_email: document.getElementById("user_email").value,
@@ -448,13 +447,16 @@ function sendEmail(e) {
   };
 
   emailjs.send("service_bvhucsk", "template_7tgz7nd", params)
-    .then(function() {
-      alert("✅ تم إرسال رسالتك بنجاح!");
-      document.querySelector("form").reset();
-    }, function(error) {
-      alert("❌ فشل الإرسال. تحقق من اتصال الإنترنت.");
-      console.error("Error:", error);
-    });
+    .then(
+      () => {
+        alert("✅ تم إرسال رسالتك بنجاح!");
+        document.querySelector("form").reset();
+      },
+      (error) => {
+        alert("❌ حدث خطأ. حاول مرة أخرى.");
+        console.error("EmailJS Error:", error);
+      }
+    );
 }
 </script>
                     </div>
