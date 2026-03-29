@@ -435,6 +435,26 @@
                           </div>
                           <button type="submit" class="btn btn-warning w-100 fw-bold" data-ar="إرسال" data-fr="Envoyer">إرسال</button>
                         </form>
+                        <script>
+function sendEmail(e) {
+  e.preventDefault();
+  
+  const params = {
+    from_name: document.getElementById("name").value,
+    from_email: document.getElementById("email").value,
+    message: document.getElementById("message").value
+  };
+
+  emailjs.send("service_bvhucsk", "template_7tgz7nd", params)
+    .then(function(response) {
+      alert("✅ تم إرسال رسالتك بنجاح!");
+      document.querySelector("form").reset(); // مسح الحقول
+    }, function(error) {
+      alert("❌ حدث خطأ أثناء الإرسال. حاول مرة أخرى.");
+      console.error("Error:", error);
+    });
+}
+</script>
                     </div>
                 </div>
                 <div class="col-lg-6 d-flex align-items-center justify-content-center p-3">
@@ -476,6 +496,13 @@
 
     <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.6.4/email.min.js"></script>
+    <script>
+      (function() {
+        emailjs.init("vmakFeib8IGyypYb1");
+      })();
+    </script>
     <script>
         // تحويل الأرقام العربية إلى لاتينية
         function convertArabicToLatin(text) {
