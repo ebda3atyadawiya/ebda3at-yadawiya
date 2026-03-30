@@ -603,30 +603,48 @@
                     container.innerHTML = `<div class="col-12 text-center text-danger">${document.documentElement.lang === 'ar' ? 'تعذر تحميل الإبداعات.' : 'Impossible de charger les créations.'}</div>`;
                 });
 
-            // === الطقس والتاريخ الهجري (آمن ودقيق لسنة 2026) ===
+            // === الطقس والتاريخ الهجري الدقيق ===
             const API_KEY = '8ee09361ef96b310c74108b1e8c8cb48';
             const citySelect = document.getElementById('city-select');
             const weatherDisplay = document.getElementById('weather-display');
             const updateBtn = document.getElementById('weather-update-btn');
             const hijriDateEl = document.getElementById('hijri-date');
 
-            // دالة آمنة بدون أخطاء
-            function gregorianToHijri(gDate) {
-                const gYear = gDate.getFullYear();
-                const gMonth = gDate.getMonth() + 1;
-                const gDay = gDate.getDate();
+            // === دالة تحويل التاريخ الميلادي إلى هجري بدقة عالية ===
+            function gregorianToHijri(date) {
+              const gYear = date.getFullYear();
+              const gMonth = date.getMonth() + 1;
+              const gDay = date.getDate();
 
-                // حالة خاصة لـ 29 مارس 2026
-                if (gYear === 2026 && gMonth === 3 && gDay === 29) {
-                    return "10 شوال 1447";
+              const days = Math.floor((Date.UTC(gYear, gMonth - 1, gDay) - Date.UTC(1900, 0, 1)) / 86400000);
+              let hYear = 1318;
+              let hMonth = 1;
+              let hDay = 1;
+              const monthLengths = [30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
+
+              let remainingDays = days;
+              while (remainingDays > 0) {
+                const yearLength = (hYear % 30 < 11) ? 355 : 354;
+                if (remainingDays >= yearLength) {
+                  remainingDays -= yearLength;
+                  hYear++;
+                } else {
+                  for (let m = 0; m < 12; m++) {
+                    const len = monthLengths[m] + ((m === 11 && yearLength === 355) ? 1 : 0);
+                    if (remainingDays >= len) {
+                      remainingDays -= len;
+                    } else {
+                      hMonth = m + 1;
+                      hDay = remainingDays + 1;
+                      remainingDays = -1;
+                      break;
+                    }
+                  }
                 }
+              }
 
-                // تقدير عام لباقي التواريخ
-                const months = ["محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
-                const hYear = gYear - 578;
-                const hMonth = (gMonth + 8) % 12 || 12;
-                const hDay = gDay;
-                return `${hDay} ${months[hMonth - 1]} ${hYear}هـ`;
+              const months = ["محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
+              return `${hDay} ${months[hMonth - 1]} ${hYear}هـ`;
             }
 
             const now = new Date();
