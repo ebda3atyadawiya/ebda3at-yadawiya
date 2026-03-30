@@ -419,19 +419,19 @@
             <div class="row g-0">
                 <div class="col-lg-6 p-3">
                     <div class="contact-card">
-                        <!-- نموذج التواصل -->
-                        <form onsubmit="sendEmail(event)">
+                        <!-- نموذج Formspree - يعمل بدون JavaScript -->
+                        <form action="https://formspree.io/f/mkopjroj" method="POST">
                           <div class="mb-3">
                             <label class="form-label text-dark" data-ar="اسمك" data-fr="Votre nom"></label>
-                            <input type="text" id="user_name" class="form-control" required>
+                            <input type="text" name="name" class="form-control" required>
                           </div>
                           <div class="mb-3">
                             <label class="form-label text-dark" data-ar="بريدك الإلكتروني" data-fr="Votre email"></label>
-                            <input type="email" id="user_email" class="form-control" required>
+                            <input type="email" name="email" class="form-control" required>
                           </div>
                           <div class="mb-3">
                             <label class="form-label text-dark" data-ar="رسالتك" data-fr="Votre message"></label>
-                            <textarea id="message" class="form-control" rows="4" required></textarea>
+                            <textarea name="message" class="form-control" rows="4" required></textarea>
                           </div>
                           <button type="submit" class="btn btn-warning w-100 fw-bold" data-ar="إرسال" data-fr="Envoyer">إرسال</button>
                         </form>
@@ -665,36 +665,6 @@
             });
             fetchWeather('Tunis');
         });
-    </script>
-
-    <!-- ✅ EmailJS - موضعه الصحيح في نهاية الصفحة -->
-    <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.6.4/email.min.js"></script>
-    <script>
-      // تهيئة EmailJS
-      emailjs.init("vmakFeib8IGyypYb1");
-
-      // دالة الإرسال
-      function sendEmail(e) {
-        e.preventDefault();
-
-        const params = {
-          user_name: document.getElementById("user_name").value,
-          user_email: document.getElementById("user_email").value,
-          message: document.getElementById("message").value
-        };
-
-        emailjs.send("service_bvhucsk", "template_7tgz7nd", params)
-          .then(
-            () => {
-              alert("✅ تم إرسال رسالتك بنجاح!");
-              document.querySelector("form").reset();
-            },
-            (error) => {
-              alert("❌ فشل الإرسال. تحقق من اتصال الإنترنت.");
-              console.error("EmailJS Error:", error);
-            }
-          );
-      }
     </script>
 </body>
 </html>
